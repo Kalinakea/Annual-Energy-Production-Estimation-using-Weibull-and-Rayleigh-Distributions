@@ -10,5 +10,5 @@ In this work, an open-source tool for wind energy project sizing is presented to
 
 The output consists of the AEP and Capacity Factor for one turbine in the desired location using EPFM and EML Weibull distribution methods and Rayleigh distribution method. It allows the user to download the data collected from the NASA POWER DAV at the desired location as well as the frequency, probabilities ans power generated in each speed interval. The user can analyze each distribution method through graphs, the power curve of the wind power and rotor power is also visible with the cut-in and cut-out lines. Finally, the speed at different heights and the wind rose are available for more analysis. In order to compare different locations, a tab for 3 location comparison was added so the user can type the 3 coordinates and the 3 specifications for the turbines in each location and the system outputs the best location (lowest LCOE) and it also displays a table comparing each location.
 
-<img src= "Pictures/AEP comparison between distributions.png" width="400"> <img src= "Pictures/comparison_distributions.png" width="400"> 
-<img src= "Pictures/powercurve.png" width="400"> <img src= "Pictures/winrose 50m.png" width="600"> 
+<img src= "Pictures/AEP comparison between distributions.png" width="350"> <img src= "Pictures/comparison_distributions.png" width="350"> 
+<img src= "Pictures/powercurve.png" width="350"> <img src= "Pictures/winrose 50m.png" width="700"> 
