@@ -57,12 +57,12 @@ notes_style ={'fontFamily': 'Arial', # --------------------------- notes
 cols = ['P_EML', 'P_EPFM', 'P_Rayl', 'P_Observed']
 columns_PDF = ['P_EML', 'P_EPFM', 'P_Rayl']
 columns_CDF = ['EML_CDF','EPFM_CDF','Rayl_CDF']
-n_clases = 21
+n_clases = 26
 limites = [0 + i * 1 for i in range(n_clases + 1)]
 h1 = 10 # [m]
 h2 = 50 # [m]
 rho = 1.225
-Cp = 16/27 # Betz limit
+Cp = 16/27*0.7857
 
 # --------------------------------------------------------------------------
 # FUNCTIONS FOR THE CALCULOUS
@@ -89,7 +89,7 @@ def generaracion_tabla(df, Hub_Height, Diameter): # -------------------- class t
     df['v_hub_int'] = [int(df['v_hub'][x]) for x in range(num_rows)]
 
     rango = df['v_hub'].max() - df['v_hub'].min()
-    n_clases = 21
+    n_clases = 26
     limites = [0 + i * 1 for i in range(n_clases + 1)]
 
     tabla_clases = pd.DataFrame({
@@ -141,6 +141,11 @@ def generaracion_tabla(df, Hub_Height, Diameter): # -------------------- class t
     tabla_clases['P_Rayl'] = [(tabla_clases['P_rotor'][x]*tabla_clases['Rayl'][x]*24*365) for x in range(n_clases)]
 
     tabla_clases['P_Observed']= df.groupby(['v_hub_int'])['P_rotor'].sum()
+
+    potencias = ['P_EML', 'P_EPFM', 'P_Rayl', 'P_Observed']
+    for potencia_col in potencias:
+        for x in range(20, 26, 1):
+            tabla_clases.loc[x, potencia_col] = 0
 
     return tabla_clases
 
@@ -220,12 +225,12 @@ app.layout = html.Div([
                         dbc.Row([
                             dbc.Col([
                                 dcc.Store(id='memoria-latitude'),
-                                dbc.Input(id="latitude", value="16.5700", placeholder="Type the latitude", type="text", style = input_style)
+                                dbc.Input(id="latitude", value="42.8444", placeholder="Type the latitude", type="text", style = input_style)
                             ], width=6), 
 
                             dbc.Col([
                                 dcc.Store(id='memoria-longitude'),
-                                dbc.Input(id="longitude", value="-94.7242", placeholder="Type the longitude", type="text", style = input_style)
+                                dbc.Input(id="longitude", value="-115.0369", placeholder="Type the longitude", type="text", style = input_style)
                             ], width=6)
                         ]),
                         html.Br(),
@@ -254,7 +259,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the diameter", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="diameter", value=169, placeholder="Type the diameter", type="number", style = input_style),
+                                    dbc.Input(id="diameter", value=88, placeholder="Type the diameter", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=6),
@@ -263,7 +268,7 @@ app.layout = html.Div([
                                 html.H4("📐 Enter the Hub height", style = {'fontFamily':'Arial, sans-serif'}),
                                 dcc.Store(id='memoria-hub_height'),
                                 dbc.InputGroup([
-                                    dbc.Input(id="hub_height", value=111.5, placeholder="Type the Hub Height", type="number", style = input_style),
+                                    dbc.Input(id="hub_height", value=80, placeholder="Type the Hub Height", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=6)
@@ -274,7 +279,7 @@ app.layout = html.Div([
                         dbc.Col([
                             dcc.Store(id='memoria-rated_power'),
                             dbc.InputGroup([
-                                        dbc.Input(id="rated_power", value=5.5, placeholder="Type the rated power", type="number", style = input_style),
+                                        dbc.Input(id="rated_power", value=2.1, placeholder="Type the rated power", type="number", style = input_style),
                                         dbc.InputGroupText("MW", style = input_style),
                                     ]),
                         ], width=6),
@@ -298,13 +303,13 @@ app.layout = html.Div([
                     ),
 
             html.Div ([                                                     # ------------------ creating the map of 1 location
-                dl.Map(id="mapa", center=[16.5700, -94.7242], zoom=8, style={"width": "100%", "height": "90vh"},
+                dl.Map(id="mapa", center=[42.8444, -115.0369], zoom=8, style={"width": "100%", "height": "90vh"},
                     children=[
                         dl.TileLayer(
-                            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-                            attribution="© OpenStreetMap contributors © CARTO"
-                        ),
-                        dl.Marker(id="marker", position=[16.5700, -94.7242], children=[dl.Tooltip("Ubicación")]
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            ),
+                        dl.Marker(id="marker", position=[42.8444, -115.0369], children=[dl.Tooltip("Ubicación")]
                         ),
                     ],
                 )
@@ -595,7 +600,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the diameter", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="diameter1", value=169, placeholder="Type the diameter", type="number", style = input_style),
+                                    dbc.Input(id="diameter1", value=88, placeholder="Type the diameter", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=12),
@@ -605,7 +610,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the Hub height", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="hub_height1", value=111.5, placeholder="Type the Hub Height", type="number", style = input_style),
+                                    dbc.Input(id="hub_height1", value=80, placeholder="Type the Hub Height", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=12),
@@ -614,7 +619,7 @@ app.layout = html.Div([
                         html.H4("🪫 Enter the rated power", style = {'fontFamily':'Arial, sans-serif'}),
                         dbc.Col([
                             dbc.InputGroup([
-                                        dbc.Input(id="rated_power1", value=5.5, placeholder="Type the rated power", type="number", style = input_style),
+                                        dbc.Input(id="rated_power1", value=2.1, placeholder="Type the rated power", type="number", style = input_style),
                                         dbc.InputGroupText("MW", style = input_style),
                                     ]),
                         ], width=12),
@@ -654,7 +659,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the diameter", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="diameter2", value=169, placeholder="Type the diameter", type="number", style = input_style),
+                                    dbc.Input(id="diameter2", value=88, placeholder="Type the diameter", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=12),
@@ -664,7 +669,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the Hub height", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="hub_height2", value=111.5, placeholder="Type the Hub Height", type="number", style = input_style),
+                                    dbc.Input(id="hub_height2", value=80, placeholder="Type the Hub Height", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=12),
@@ -673,7 +678,7 @@ app.layout = html.Div([
                         html.H4("🪫 Enter the rated power", style = {'fontFamily':'Arial, sans-serif'}),
                         dbc.Col([
                             dbc.InputGroup([
-                                        dbc.Input(id="rated_power2", value=5.5, placeholder="Type the rated power", type="number", style = input_style),
+                                        dbc.Input(id="rated_power2", value=2.1, placeholder="Type the rated power", type="number", style = input_style),
                                         dbc.InputGroupText("MW", style = input_style),
                                     ]),
                         ], width=12),
@@ -713,7 +718,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the diameter", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="diameter3", value=169, placeholder="Type the diameter", type="number", style = input_style),
+                                    dbc.Input(id="diameter3", value=88, placeholder="Type the diameter", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=12),
@@ -723,7 +728,7 @@ app.layout = html.Div([
                             dbc.Col([
                                 html.H4("📐 Enter the Hub height", style = {'fontFamily':'Arial, sans-serif'}),
                                 dbc.InputGroup([
-                                    dbc.Input(id="hub_height3", value=111.5, placeholder="Type the Hub Height", type="number", style = input_style),
+                                    dbc.Input(id="hub_height3", value=80, placeholder="Type the Hub Height", type="number", style = input_style),
                                     dbc.InputGroupText("m", style = input_style),
                                 ]),
                             ], width=12),
@@ -732,7 +737,7 @@ app.layout = html.Div([
                         html.H4("🪫 Enter the rated power", style = {'fontFamily':'Arial, sans-serif'}),
                         dbc.Col([
                             dbc.InputGroup([
-                                        dbc.Input(id="rated_power3", value=5.5, placeholder="Type the rated power", type="number", style = input_style),
+                                        dbc.Input(id="rated_power3", value=2.1, placeholder="Type the rated power", type="number", style = input_style),
                                         dbc.InputGroupText("MW", style = input_style),
                                     ]),
                         ], width=12),
@@ -898,14 +903,14 @@ app.layout = html.Div([
 )
 def update_output(n_clicks, latitude, longitude, anio, diameter, hub_height, rated_power):
     if n_clicks is None:
-        return [], [], [16.5700, -94.7242], [16.5700, -94.7242], [], [], [], [], [], [], [], [], []
+        return [], [], [42.8444, -115.0369], [42.8444, -115.0369], [], [], [], [], [], [], [], [], []
 
     try:
         lat = float(latitude)
         lon = float(longitude)
         year = int(anio)
     except (TypeError, ValueError):
-        return [], [], [16.5700, -94.7242], [16.5700, -94.7242], [], [], [], [], [], [], [], [], []
+        return [], [], [42.8444, -115.0369], [42.8444, -115.0369], [], [], [], [], [], [], [], [], []
 
     nueva_posicion = [lat, lon]
 
@@ -1036,14 +1041,14 @@ def annual_energy_production(Rated_power, tabla_clases, df):
         else:
             energia_real_Rayl.append(current_p_Rayl)
 
-    aep_eml = f"{sum(energia_real_EML)/1e3:.3f} GWh"
-    aep_epfm = f"{sum(energia_real_EPFM)/1e3:.3f} GWh"
-    aep_rayl = f"{sum(energia_real_Rayl)/1e3:.3f} GWh"
+    aep_eml = f"{(sum(energia_real_EML)/1e3)*0.82:.3f} GWh"
+    aep_epfm = f"{(sum(energia_real_EPFM)/1e3)*0.82:.3f} GWh"
+    aep_rayl = f"{(sum(energia_real_Rayl)/1e3)*0.82:.3f} GWh"
 
     # ENERGY CAPACITY
-    cap_eml = f"{(sum(energia_real_EML)/(Rated_power*8760)*100):.3f}%"
-    cap_epfm = f"{(sum(energia_real_EPFM)/(Rated_power*8760)*100):.2f}%"
-    cap_rayl = f"{(sum(energia_real_Rayl)/(Rated_power*8760)*100):.2f}%"
+    cap_eml = f"{(sum(energia_real_EML)*0.82/(Rated_power*8760)*100):.3f}%"
+    cap_epfm = f"{(sum(energia_real_EPFM)*0.82/(Rated_power*8760)*100):.2f}%"
+    cap_rayl = f"{(sum(energia_real_Rayl)*0.82/(Rated_power*8760)*100):.2f}%"
 
     # ENERGY CAPACITY CON DATOS CRUDOS
     num_rows = df['WS10M'].count()
@@ -1117,7 +1122,7 @@ def update_graph(selected_cols, tabla_clases):
 
     fig.update_layout(
         title='AEP comparison between distributions',
-        xaxis_title='Speed [m/s]', yaxis_title='Power [MW]',
+        xaxis_title='Speed [m/s]', yaxis_title='Energy [MWh]',
         template='plotly_white',
         width=1000, height=600,
         legend=dict(
@@ -1274,21 +1279,54 @@ def update_graph(df, Hub_Height):
 
 def display_graph(df):
     df = pd.DataFrame(df)
-    df_windrose50m = pd.DataFrame()
-    df_windrose50m['direction'] = df['WD50M']
-    df_windrose50m['frequency'] = df['WS50M']
+    df_rose = df[['WD50M', 'WS50M']].dropna().copy()
+    dir_labels = [
+        'N',
+        'NNE',
+        'NE',
+        'ENE',
+        'E',
+        'ESE',
+        'SE',
+        'SSE',
+        'S',
+        'SSW',
+        'SW',
+        'WSW',
+        'W',
+        'WNW',
+        'NW',
+        'NNW',
+    ]
 
-    df_windrose50m = px.data.wind()
-    fig = px.bar_polar(
-        df_windrose50m,
-        r="frequency",
-        theta="direction",
-        color="strength",
-        template="plotly_dark",
-        color_discrete_sequence=px.colors.sequential.Plasma_r
+    shifted_deg = (df_rose['WD50M'] + 11.25) % 360 # Offset by 11.25° so North centers around 0°
+    df_rose['direction_sector'] = pd.cut(
+        shifted_deg, bins=np.linspace(0, 360, 17), labels=dir_labels, right=False
     )
 
-    fig.update_layout(title='Wind Rose at 50m height')
+    speed_bins = [0, 3, 6, 9, 12, 15, np.inf]
+    speed_labels = ['0-3 m/s', '3-6 m/s', '6-9 m/s', '9-12 m/s', '12-15 m/s', '>15 m/s']
+    df_rose['speed_range'] = pd.cut(
+        df_rose['WS50M'], bins=speed_bins, labels=speed_labels, right=False
+    )
+
+    rose_data = (
+        df_rose.groupby(['direction_sector', 'speed_range'], observed=False)
+        .size()
+        .reset_index(name='count')
+    )
+    rose_data['frequency'] = (rose_data['count'] / len(df_rose)) * 100
+
+    fig = px.bar_polar(
+        rose_data,
+        r='frequency',
+        theta='direction_sector',
+        color='speed_range',
+        template='plotly_dark',
+        color_discrete_sequence=px.colors.sequential.Plasma_r,
+        title='Wind Rose at 50m Height',
+        labels={'frequency': 'Frequency (%)', 'speed_range': 'Speed Range'},
+    )
 
     return fig
 
@@ -1319,6 +1357,10 @@ def generacion_grafica(tabla_clases, Rated_power):
         cont += 1
         if valor == Rated_power:
             break
+
+    for i in range(len(x_values)):
+        if x_values[i] >= 25:
+            energia_rotor[i] = 0
 
     fig = go.Figure()
 
@@ -1557,16 +1599,16 @@ def calculos_3locations(n_clicks,
         else:
             energia_real_EPFM3.append(current_p_EPFM3)
     
-    df_3loc.loc[0, 'AEP [MW]'] = sum(energia_real_EPFM1)
-    df_3loc.loc[1, 'AEP [MW]'] = sum(energia_real_EPFM2)
-    df_3loc.loc[2, 'AEP [MW]'] = sum(energia_real_EPFM3)
+    df_3loc.loc[0, 'AEP [MW]'] = (sum(energia_real_EPFM1))*0.82
+    df_3loc.loc[1, 'AEP [MW]'] = (sum(energia_real_EPFM2))*0.82
+    df_3loc.loc[2, 'AEP [MW]'] = (sum(energia_real_EPFM3))*0.82
 
     # ----------------------------------------------------------------------------
     # CAPACITY FACTOR
     # ----------------------------------------------------------------------------
-    df_3loc.loc[0, 'Cf [%]'] = sum(energia_real_EPFM1)/(df_3loc.loc[0, 'Rated_power [MW]']*8760)*100
-    df_3loc.loc[1, 'Cf [%]'] = sum(energia_real_EPFM2)/(df_3loc.loc[1, 'Rated_power [MW]']*8760)*100
-    df_3loc.loc[2, 'Cf [%]'] = sum(energia_real_EPFM3)/(df_3loc.loc[2, 'Rated_power [MW]']*8760)*100
+    df_3loc.loc[0, 'Cf [%]'] = (sum(energia_real_EPFM1)*0.82)/(df_3loc.loc[0, 'Rated_power [MW]']*8760)*100
+    df_3loc.loc[1, 'Cf [%]'] = (sum(energia_real_EPFM2)*0.82)/(df_3loc.loc[1, 'Rated_power [MW]']*8760)*100
+    df_3loc.loc[2, 'Cf [%]'] = (sum(energia_real_EPFM3)*0.82)/(df_3loc.loc[2, 'Rated_power [MW]']*8760)*100
 
     # ----------------------------------------------------------------------------
     # LCOE
